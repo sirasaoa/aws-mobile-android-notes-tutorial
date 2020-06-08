@@ -1,0 +1,16 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  docker build -t sirasaoa/build-android . 
+
+script:
+  docker run -e CI=true sirasaoa/build-android ./gradlew clean assembleDebug 
+
+after_success:
+  #Log in to the Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #Push image to Docker Hub
+  - docker push sirasaoa/build-android
+  
