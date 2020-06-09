@@ -6,7 +6,7 @@ before_install:
   docker build -t sirasaoa/build-android . 
 
 script:
-  docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug --debug; cd app/build/outputs/apk/debug; ls -l" 
+  docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l" 
 
 after_success:
   #Log in to the Docker CLI
