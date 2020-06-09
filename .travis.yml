@@ -2,15 +2,20 @@ sudo: required
 services:
   - docker
 
-before_install:
-  docker build -t sirasaoa/build-android . 
+jobs:
+  include:
+    - stage: Build Docker Image
+      script:
+      - docker build -t sirasaoa/build-android .
 
-script:
-  docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l" 
+    - stage: Run Tests
+      script:
+      - docker run -it --rm -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleDebug 
+      after_success:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+      - docker push sirasaoa/build-android
 
-after_success:
-  #Log in to the Docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  #Push image to Docker Hub
-  - docker push sirasaoa/build-android
-  
+    - stage: Build Release Archive
+      script:
+      - docker run -it --rm -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleRelease
+      
