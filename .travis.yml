@@ -6,7 +6,7 @@ before_install:
   docker build -t sirasaoa/build-android . 
 
 script:
-  docker run -e CI=true -v "$PWD":/home/gradle/ -w /home/gradle/MyApp sirasaoa/build-android gradle -PdisablePreDex clean 
+  docker run -e CI=true -w /home/gradle sirasaoa/build-android gradle -PdisablePreDex clean 
 
 after_success:
   #Log in to the Docker CLI
