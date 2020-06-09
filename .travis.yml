@@ -6,7 +6,7 @@ before_install:
   docker build -t sirasaoa/build-android . 
 
 script:
-  docker run -e CI=true sirasaoa/build-android gradle clean assembleDebug 
+  docker run -e CI=true sirasaoa/build-android gradle assembleDebug 
 
 after_success:
   #Log in to the Docker CLI
