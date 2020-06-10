@@ -14,6 +14,11 @@ jobs:
       after_success:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
       - docker push sirasaoa/build-android
+      addons:
+        artifacts:
+          paths:
+            - $PWD/app/build/outputs/apk/debug/*.apk
+            
 
     - stage: Deploy Release Archive
       script:
@@ -22,4 +27,3 @@ jobs:
         artifacts:
           paths:
             - $PWD/app/build/outputs/apk/release/*.apk
-            
