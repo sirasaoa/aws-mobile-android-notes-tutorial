@@ -10,7 +10,7 @@ jobs:
 
     - stage: Run Tests
       script:
-      - docker run -it --name candroid-e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l"
+      - docker run -it --name candroid -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l"
       - docker cp candroid:app/build/outputs/apk/debug/*.apk .
 
       after_success:
