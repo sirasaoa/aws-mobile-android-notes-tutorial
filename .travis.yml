@@ -15,6 +15,11 @@ jobs:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
       - docker push sirasaoa/build-android
 
-    - stage: Build Release Archive
+    - stage: Deploy Release Archive
       script:
       - docker run -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleRelease
+      addons:
+        artifacts:
+          paths:
+            - $PWD/app/build/outputs/apk/release/*.apk
+            
