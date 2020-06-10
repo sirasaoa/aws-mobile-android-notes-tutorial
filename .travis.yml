@@ -10,8 +10,9 @@ jobs:
 
     - stage: Run Tests
       script:
-      - docker run -it --name candroid -e CI=true -v "$PWD":/app sirasaoa/build-android ssh -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l"
-      - docker cp candroid:app/build/outputs/apk/debug/*.apk .
+      - docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l" 
+      - CONTAINER_ID=$(docker ps -alq)
+      - docker cp $CONTAINER_ID:app/build/outputs/apk/debug/*.apk .
 
       after_success:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
