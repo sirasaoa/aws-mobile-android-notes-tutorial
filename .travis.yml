@@ -10,15 +10,13 @@ jobs:
 
     - stage: Run Tests
       script:
-      - docker run -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleDebug 
-      - docker ps --all
+      - docker run -e CI=true -v "$PWD":/app --name c-android sirasaoa/build-android ./gradlew clean assembleDebug 
+      - docker cp c-android:app/build/outputs/apk/debug/*.apk .
       after_success:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
       - docker push sirasaoa/build-android
       addons:
-        artifacts:
-          paths:
-            - $PWD/app/build/outputs/apk/debug/*.apk
+        artifacts: true
             
     - stage: Deploy Release Archive
       script:
