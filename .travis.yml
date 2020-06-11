@@ -12,7 +12,7 @@ jobs:
       script:
       - docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l" 
       - CONTAINER_ID=$(docker ps -alq)
-      - docker cp $CONTAINER_ID:app/build/outputs/apk/debug/*.apk .
+      - docker cp $CONTAINER_ID:/app/build/outputs/apk/debug/*.apk .
 
       after_success:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
