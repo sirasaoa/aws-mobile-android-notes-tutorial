@@ -24,3 +24,17 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSIO
 #Set working dir
 RUN mkdir /app
 WORKDIR /app
+
+#Copy build inside app
+COPY . .
+
+#Set environment variables
+ENV CI=true
+
+#Run commands on container start
+RUN ./gradlew clean assembleDebug \
+    cd app/build/outputs/apk/debug \
+    ls -l
+
+#Copy final archive to host machine
+COPY app/build/outputs/apk/debug/*.apk .
