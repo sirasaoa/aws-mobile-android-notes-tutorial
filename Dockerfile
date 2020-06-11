@@ -32,8 +32,8 @@ COPY . .
 ENV CI=true
 
 #Run commands on container start
-RUN ./gradlew clean assembleDebug \
-    cd app/build/outputs/apk/debug \
+RUN ./gradlew clean assembleDebug; \
+    cd app/build/outputs/apk/debug; \
     ls -l
 
 #Copy final archive to host machine
