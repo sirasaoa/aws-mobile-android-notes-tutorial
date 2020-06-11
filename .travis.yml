@@ -12,7 +12,7 @@ jobs:
       script:
       - docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android bash -c "./gradlew clean assembleDebug; cd app/build/outputs/apk/debug; ls -l" 
       - echo $PWD
-      - cd /app/src | ls -l
+      - cd ./app/src | ls -l
 
       after_success:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
