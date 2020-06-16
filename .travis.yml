@@ -1,21 +1,32 @@
-language: android
-jdk: oraclejdk8
-sudo: false
+sudo: required
+services:
+  - docker
 
-android:
-  components:
-    - platform-tools
-    - tools
-    - build-tools-24.0.2
-    - android-22
-    - android-24
-    - sys-img-armeabi-v7a-android-22
+jobs:
+  include:
+    - stage: Build Docker Image
+      script:
+      - docker build -t sirasaoa/build-android .
 
-before_script:
-  # Create and start emulator
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+    - stage: Run Tests
+      script:
+      - docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleDebug
 
-script: ./gradlew connectedAndroidTest
+      after_success:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+      - docker push sirasaoa/build-android
+            
+    - stage: Deploy Release Archive
+      script:
+      - docker run -it -e CI=true -v "$PWD":/app sirasaoa/build-android ./gradlew clean assembleRelease
+      - cp ./app/build/outputs/apk/release/*.apk .
+
+      deploy:
+        provider: s3
+        region: us-east-1
+        bucket: "travis-app-demo"
+        access_key_id: "$ACCESS_KEY_ID"
+        secret_access_key: "$SECRET_ACCESS_KEY"
+        skip_cleanup: true
+        local_dir: .
+        glob: "*.apk"
